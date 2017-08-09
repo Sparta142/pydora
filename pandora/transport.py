@@ -15,7 +15,7 @@ import json
 import base64
 import requests
 from requests.adapters import HTTPAdapter
-from Crypto.Cipher import Blowfish
+from blowfish import Cipher
 
 from .errors import PandoraException
 
@@ -244,8 +244,8 @@ class Encryptor(object):
     """
 
     def __init__(self, in_key, out_key):
-        self.bf_out = Blowfish.new(out_key, Blowfish.MODE_ECB)
-        self.bf_in = Blowfish.new(in_key, Blowfish.MODE_ECB)
+        self.bf_out = Cipher(out_key.encode('utf-8'))
+        self.bf_in = Cipher(in_key.encode('utf-8'))
 
     @staticmethod
     def _decode_hex(data):
@@ -256,14 +256,15 @@ class Encryptor(object):
         return base64.b16encode(data).lower()
 
     def decrypt(self, data):
-        data = self.bf_out.decrypt(self._decode_hex(data))
+        data = b''.join(self.bf_out.decrypt_ecb(self._decode_hex(data)))
         return json.loads(self.strip_padding(data))
 
     def decrypt_sync_time(self, data):
-        return int(self.bf_in.decrypt(self._decode_hex(data))[4:-2])
+        decrypted = b''.join(self.bf_in.decrypt_ecb(self._decode_hex(data)))
+        return int(decrypted[4:-2])
 
     def add_padding(self, data):
-        block_size = Blowfish.block_size
+        block_size = 8
         pad_size = len(data) % block_size
         return data + (chr(pad_size) * (block_size - pad_size))
 
@@ -274,4 +275,6 @@ class Encryptor(object):
         return data[:-pad_size]
 
     def encrypt(self, data):
-        return self._encode_hex(self.bf_out.encrypt(self.add_padding(data)))
+        padded = self.add_padding(data).encode('utf-8')
+        encrypted = b''.join(self.bf_out.encrypt_ecb(padded))
+        return self._encode_hex(encrypted)
