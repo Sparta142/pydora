@@ -5,13 +5,13 @@ Pandora API Client
 .. image:: https://img.shields.io/pypi/v/pydora.svg
     :target: https://pypi.python.org/pypi/pydora
 
-.. image:: https://img.shields.io/travis/mcrute/pydora.svg
-    :target: https://travis-ci.org/mcrute/pydora
+.. image:: https://travis-ci.org/Sparta142/pydora.svg?branch=master
+    :target: https://travis-ci.org/Sparta142/pydora
 
 This code is licensed under the MIT license.
 
 This is a reasonably complete implementation of the Pandora API that supports
-Python 2 and 3. It does not implement any of the undocumented features and does
+Python 3. It does not implement any of the undocumented features and does
 not implement most of the account management features as they are not terribly
 useful.
 
